@@ -1,0 +1,68 @@
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    depends_on:
+      - menu-service
+      - order-service
+      - payment-service
+      - inventory-service
+      - customer-service
+
+  menu-service:
+    build: ./menu-services
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/menuDB
+    depends_on:
+      - mongo
+
+  order-service:
+    build: ./order-services
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/orderDB
+    depends_on:
+      - mongo
+      - menu-service
+      - customer-service
+
+  inventory-service:
+    build: ./inventory-services
+    ports:
+      - "3004:3004"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/inventoryDB
+    depends_on:
+      - mongo
+
+  customer-service:
+    build: ./customer-services
+    ports:
+      - "3005:3005"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/customerDB
+    depends_on:
+      - mongo
+
+  payment-service:
+    build: ./payment-services
+    ports:
+      - "3003:3003"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/paymentDB
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
